@@ -7,6 +7,7 @@ namespace TextEffect
     {
         [SerializeField] private float _angle;
         [SerializeField] private AlignmentType _alignment = AlignmentType.MiddleCenter;
+        private float _cacheAngle;
 
         /// <summary>
         /// 移動量
@@ -39,7 +40,6 @@ namespace TextEffect
                     var element = stream[i + r];
 
                     var pos = element.position - (Vector3)anchor;
-                    ;
                     var newPos = new Vector2(
                         pos.x * Mathf.Cos(Angle * Mathf.Deg2Rad) - pos.y * Mathf.Sin(Angle * Mathf.Deg2Rad),
                         pos.x * Mathf.Sin(Angle * Mathf.Deg2Rad) + pos.y * Mathf.Cos(Angle * Mathf.Deg2Rad));
@@ -47,6 +47,16 @@ namespace TextEffect
 
                     stream[i + r] = element;
                 }
+            }
+        }
+
+
+        private void Update()
+        {
+            if (_cacheAngle != Angle)
+            {
+                _cacheAngle = Angle;
+                Angle = _cacheAngle;
             }
         }
     }

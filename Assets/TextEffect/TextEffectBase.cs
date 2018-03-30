@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,6 +13,8 @@ namespace TextEffect
         private List<UIVertex> _stream = new List<UIVertex>();
         private Graphic _textGraphic;
         private RectTransform _rectTransform;
+
+        private Coroutine _setVerticesDirtyCoroutine;
 
         private Graphic TextGraphic
         {
@@ -93,6 +95,12 @@ namespace TextEffect
         {
             if (TextGraphic != null) TextGraphic.SetVerticesDirty();
             BeforAwake();
+        }
+
+        private IEnumerator SetVerticesDirtyAsync()
+        {
+            yield return null;
+            if (TextGraphic != null) TextGraphic.SetVerticesDirty();
         }
 
         private static Vector2 GetUpperLeft(UIVertex[] stream, int i)

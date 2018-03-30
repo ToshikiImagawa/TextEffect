@@ -7,6 +7,7 @@ namespace TextEffect
     {
         [SerializeField] private Vector2 _distance = Vector2.zero;
         [SerializeField] private AlignmentType _alignment = AlignmentType.MiddleCenter;
+        private Vector2 _cacheDistance;
 
         /// <summary>
         /// 移動量
@@ -57,6 +58,15 @@ namespace TextEffect
 
                     stream[i + r] = element;
                 }
+            }
+        }
+
+        private void Update()
+        {
+            if (_cacheDistance != Distance)
+            {
+                _cacheDistance = Distance;
+                Distance = _cacheDistance;
             }
         }
     }

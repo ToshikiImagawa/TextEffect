@@ -1,32 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TextEffect
 {
     public class TextScale : TextEffectBase
     {
-        /// <summary>
-        /// 速度
-        /// </summary>
-        [SerializeField] private float _speed;
+        [SerializeField] private Vector2 _scale = Vector2.one;
+        [SerializeField] private AlignmentType _alignment = AlignmentType.MiddleCenter;
+        private Vector2 _cacheScale;
 
         /// <summary>
-        /// 最大スケール
+        /// 拡大量
         /// </summary>
-        [SerializeField] private float _maxScale;
-
-        /// <summary>
-        /// 最小スケール
-        /// </summary>
-        [SerializeField] private float _minScale;
-
-
-        [SerializeField] private float _scale;
-
-        /// <summary>
-        /// 移動量
-        /// </summary>
-        public float Scale
+        public Vector2 Scale
         {
             get { return _scale; }
             set
@@ -36,9 +23,6 @@ namespace TextEffect
             }
         }
 
-        public bool IsPlay;
-
-        private bool _scaleUp;
 
 #if UNITY_EDITOR
         protected override void OnValidate()
@@ -52,18 +36,16 @@ namespace TextEffect
         {
             for (int i = 0, streamCount = stream.Count; i < streamCount; i += 6)
             {
-                // 文字の中央を取得（上なら[i+1]）
-                var center = Vector2.Lerp(stream[i].position, stream[i + 3].position, 0.5f);
-                // 頂点を回す
+                var anchor = GetAnchor(stream.ToArray(), i, _alignment);
                 for (var r = 0; r < 6; r++)
                 {
                     var element = stream[i + r];
 
-                    var pos = element.position - (Vector3) center;
+                    var pos = element.position - (Vector3)anchor;
 
-                    Vector2 newPos = pos * Scale;
+                    Vector2 newPos = new Vector2(pos.x * Scale.x, pos.y * Scale.y);
 
-                    element.position = newPos + center;
+                    element.position = newPos + anchor;
 
                     stream[i + r] = element;
                 }
@@ -72,19 +54,10 @@ namespace TextEffect
 
         private void Update()
         {
-            if (!IsPlay) return;
-            if (_maxScale <= _minScale) return;
-            if (_scaleUp)
+            if (_cacheScale != Scale)
             {
-                var newScale = Scale + _speed;
-                if (newScale > _maxScale) _scaleUp = false;
-                else Scale = newScale;
-            }
-            else
-            {
-                var newScale = Scale - _speed;
-                if (newScale < _minScale) _scaleUp = true;
-                else Scale = newScale;
+                _cacheScale = Scale;
+                Scale = _cacheScale;
             }
         }
     }
