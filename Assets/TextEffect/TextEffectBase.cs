@@ -10,7 +10,6 @@ namespace TextEffect
     [RequireComponent(typeof(Graphic), typeof(Text), typeof(RectTransform))]
     public abstract class TextEffectBase : UIBehaviour, IMeshModifier
     {
-        private List<UIVertex> _stream = new List<UIVertex>();
         private Graphic _textGraphic;
         private RectTransform _rectTransform;
 
@@ -38,13 +37,14 @@ namespace TextEffect
 
         void IMeshModifier.ModifyMesh(VertexHelper verts)
         {
-            _stream.Clear();
-            verts.GetUIVertexStream(_stream);
+            var stream = ListPool<UIVertex>.Get();
+            verts.GetUIVertexStream(stream);
 
-            Modify(ref _stream);
+            Modify(ref stream);
 
             verts.Clear();
-            verts.AddUIVertexTriangleStream(_stream);
+            verts.AddUIVertexTriangleStream(stream);
+            ListPool<UIVertex>.Release(stream);
         }
 
         protected static Vector2 GetAnchor(UIVertex[] stream, int index, AlignmentType alignment)
