@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace TextEffect
 {
+    [AddComponentMenu("UI/TextEffect/TextPosition", 10)]
     public class TextPosition : TextEffectBase
     {
         [SerializeField] private Vector2 _distance = Vector2.zero;

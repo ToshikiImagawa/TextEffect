@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace TextEffect
 {
+    [AddComponentMenu("UI/TextEffect/TextRotation", 11)]
     public class TextRotation : TextEffectBase
     {
         [SerializeField] private float _angle;

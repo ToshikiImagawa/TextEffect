@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace TextEffect
 {
+    [AddComponentMenu("UI/TextEffect/TextScale", 12)]
     public class TextScale : TextEffectBase
     {
         [SerializeField] private Vector2 _scale = Vector2.one;
