@@ -10,7 +10,10 @@ namespace TextEffect
         [SerializeField] private Vector2 _fromDistance = Vector2.zero;
         [SerializeField] private Vector2 _toDistance = Vector2.zero;
         [SerializeField] private AlignmentType _alignment = AlignmentType.MiddleCenter;
-        private Vector2 _cacheDistance;
+        private float _cacheBlend;
+        private float _cacheInterval;
+        private Vector2 _cacheToDistance;
+        private Vector2 _cacheFromDistance;
 
         /// <summary>
         /// ブレンド割合
@@ -85,11 +88,13 @@ namespace TextEffect
             var streamCount = stream.Count;
             var startPoint = (streamCount / 6 + Interval * 2) * Blend - Interval;
 
-            for (int i = 0; i < streamCount; i += 6)
+            for (var i = 0; i < streamCount; i += 6)
             {
-                var distance = count < startPoint ? ToDistance :
-                    count > startPoint + Interval ? FromDistance :
-                    FromDistance + (ToDistance - FromDistance) * (startPoint + Interval - count) / Interval;
+                var distance = count < startPoint
+                    ? ToDistance
+                    : count > startPoint + Interval
+                        ? FromDistance
+                        : FromDistance + (ToDistance - FromDistance) * (startPoint + Interval - count) / Interval;
 
                 var anchor = GetAnchor(stream.ToArray(), i, _alignment);
                 var newCenter = anchor + distance;
@@ -105,13 +110,37 @@ namespace TextEffect
                 for (var r = 0; r < 6; r++)
                 {
                     var element = stream[i + r];
-                    var pos = element.position - (Vector3)anchor;
-                    var newPosition = (Vector2)pos + distanceCenter;
+                    var pos = element.position - (Vector3) anchor;
+                    var newPosition = (Vector2) pos + distanceCenter;
                     element.position = newPosition;
 
                     stream[i + r] = element;
                 }
-                count ++;
+                count++;
+            }
+        }
+
+        private void Update()
+        {
+            if (_cacheToDistance != ToDistance)
+            {
+                _cacheToDistance = ToDistance;
+                ToDistance = _cacheToDistance;
+            }
+            if (_cacheFromDistance != FromDistance)
+            {
+                _cacheFromDistance = FromDistance;
+                FromDistance = _cacheFromDistance;
+            }
+            if (_cacheBlend != Blend)
+            {
+                _cacheBlend = Blend;
+                Blend = _cacheBlend;
+            }
+            if (_cacheInterval != Interval)
+            {
+                _cacheInterval = Interval;
+                Interval = _cacheInterval;
             }
         }
     }

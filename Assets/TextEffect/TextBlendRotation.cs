@@ -12,6 +12,11 @@ namespace TextEffect
         [SerializeField] private float _toAngle;
         [SerializeField] private AlignmentType _alignment = AlignmentType.MiddleCenter;
 
+        private float _cacheBlend;
+        private float _cacheInterval;
+        private float _cacheFromAngle;
+        private float _cacheToAngle;
+
         /// <summary>
         /// ブレンド割合
         /// </summary>
@@ -63,6 +68,7 @@ namespace TextEffect
                 SetVerticesDirty();
             }
         }
+
 #if UNITY_EDITOR
         protected override void OnValidate()
         {
@@ -82,9 +88,11 @@ namespace TextEffect
 
             for (int i = 0; i < streamCount; i += 6)
             {
-                var angle = count < startPoint ? ToAngle :
-                    count > startPoint + Interval ? FromAngle :
-                    FromAngle + (ToAngle - FromAngle) * (startPoint + Interval - count) / Interval;
+                var angle = count < startPoint
+                    ? ToAngle
+                    : count > startPoint + Interval
+                        ? FromAngle
+                        : FromAngle + (ToAngle - FromAngle) * (startPoint + Interval - count) / Interval;
 
                 var anchor = GetAnchor(stream.ToArray(), i, _alignment);
 
@@ -92,7 +100,7 @@ namespace TextEffect
                 {
                     var element = stream[i + r];
 
-                    var pos = element.position - (Vector3)anchor;
+                    var pos = element.position - (Vector3) anchor;
                     var newPos = new Vector2(
                         pos.x * Mathf.Cos(angle * Mathf.Deg2Rad) - pos.y * Mathf.Sin(angle * Mathf.Deg2Rad),
                         pos.x * Mathf.Sin(angle * Mathf.Deg2Rad) + pos.y * Mathf.Cos(angle * Mathf.Deg2Rad));
@@ -101,6 +109,30 @@ namespace TextEffect
                     stream[i + r] = element;
                 }
                 count++;
+            }
+        }
+
+        private void Update()
+        {
+            if (_cacheToAngle != ToAngle)
+            {
+                _cacheToAngle = ToAngle;
+                ToAngle = _cacheToAngle;
+            }
+            if (_cacheFromAngle != FromAngle)
+            {
+                _cacheFromAngle = FromAngle;
+                FromAngle = _cacheFromAngle;
+            }
+            if (_cacheBlend != Blend)
+            {
+                _cacheBlend = Blend;
+                Blend = _cacheBlend;
+            }
+            if (_cacheInterval != Interval)
+            {
+                _cacheInterval = Interval;
+                Interval = _cacheInterval;
             }
         }
     }
