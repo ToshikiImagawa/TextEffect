@@ -3,18 +3,17 @@ using UnityEngine;
 
 namespace TextEffect
 {
-    public class TextBlendRotation : TextEffectBase
+    public class TextBlendScale : TextEffectBase
     {
         [SerializeField, Range(0f, 1f)] private float _blend;
         [SerializeField] private float _interval;
-        [SerializeField] private float _fromAngle;
-        [SerializeField] private float _toAngle;
+        [SerializeField] private Vector2 _fromScale = Vector2.zero;
+        [SerializeField] private Vector2 _toScale = Vector2.zero;
         [SerializeField] private AlignmentType _alignment = AlignmentType.MiddleCenter;
-
         private float _cacheBlend;
         private float _cacheInterval;
-        private float _cacheFromAngle;
-        private float _cacheToAngle;
+        private Vector2 _cacheToScale;
+        private Vector2 _cacheFromScale;
 
         /// <summary>
         /// ブレンド割合
@@ -45,12 +44,12 @@ namespace TextEffect
         /// <summary>
         /// 開始
         /// </summary>
-        public float FromAngle
+        public Vector2 FromScale
         {
-            get { return _fromAngle; }
+            get { return _fromScale; }
             set
             {
-                _fromAngle = value;
+                _fromScale = value;
                 SetVerticesDirty();
             }
         }
@@ -58,12 +57,12 @@ namespace TextEffect
         /// <summary>
         /// 終了
         /// </summary>
-        public float ToAngle
+        public Vector2 ToScale
         {
-            get { return _toAngle; }
+            get { return _toScale; }
             set
             {
-                _toAngle = value;
+                _toScale = value;
                 SetVerticesDirty();
             }
         }
@@ -72,8 +71,8 @@ namespace TextEffect
         protected override void OnValidate()
         {
             base.OnValidate();
-            ToAngle = _toAngle;
-            FromAngle = _fromAngle;
+            FromScale = _fromScale;
+            ToScale = _toScale;
             Blend = _blend;
             Interval = _interval;
         }
@@ -84,25 +83,22 @@ namespace TextEffect
             var count = 0;
             var streamCount = stream.Count;
             var startPoint = (streamCount / 6 + Interval * 2) * Blend - Interval;
-
             for (int i = 0; i < streamCount; i += 6)
             {
-                var angle = count < startPoint
-                    ? ToAngle
+                var scale = count < startPoint
+                    ? ToScale
                     : count > startPoint + Interval
-                        ? FromAngle
-                        : FromAngle + (ToAngle - FromAngle) * (startPoint + Interval - count) / Interval;
-
+                        ? FromScale
+                        : FromScale + (ToScale - FromScale) * (startPoint + Interval - count) / Interval;
                 var anchor = GetAnchor(stream.ToArray(), i, _alignment);
-
                 for (var r = 0; r < 6; r++)
                 {
                     var element = stream[i + r];
 
-                    var pos = element.position - (Vector3) anchor;
-                    var newPos = new Vector2(
-                        pos.x * Mathf.Cos(angle * Mathf.Deg2Rad) - pos.y * Mathf.Sin(angle * Mathf.Deg2Rad),
-                        pos.x * Mathf.Sin(angle * Mathf.Deg2Rad) + pos.y * Mathf.Cos(angle * Mathf.Deg2Rad));
+                    var pos = element.position - (Vector3)anchor;
+
+                    Vector2 newPos = new Vector2(pos.x * scale.x, pos.y * scale.y);
+
                     element.position = newPos + anchor;
 
                     stream[i + r] = element;
@@ -113,15 +109,15 @@ namespace TextEffect
 
         private void Update()
         {
-            if (_cacheToAngle != ToAngle)
+            if (_cacheToScale != ToScale)
             {
-                _cacheToAngle = ToAngle;
-                ToAngle = _cacheToAngle;
+                _cacheToScale = ToScale;
+                ToScale = _cacheToScale;
             }
-            if (_cacheFromAngle != FromAngle)
+            if (_cacheFromScale != FromScale)
             {
-                _cacheFromAngle = FromAngle;
-                FromAngle = _cacheFromAngle;
+                _cacheFromScale = FromScale;
+                FromScale = _cacheFromScale;
             }
             if (_cacheBlend != Blend)
             {
