@@ -10,6 +10,7 @@ namespace TextEffect
         [SerializeField] private float _fromAngle;
         [SerializeField] private float _toAngle;
         [SerializeField] private AlignmentType _alignment = AlignmentType.MiddleCenter;
+        [SerializeField] private AnimationCurve _animationCurve;
 
         private float _cacheBlend;
         private float _cacheInterval;
@@ -83,7 +84,7 @@ namespace TextEffect
         {
             var count = 0;
             var streamCount = stream.Count;
-            var startPoint = (streamCount / 6 + Interval * 2) * Blend - Interval;
+            var startPoint = (streamCount / 6f + Interval - 1) * EffectBlend - Interval;
 
             for (int i = 0; i < streamCount; i += 6)
             {
@@ -109,6 +110,11 @@ namespace TextEffect
                 }
                 count++;
             }
+        }
+
+        private float EffectBlend
+        {
+            get { return _animationCurve == null ? _blend : _animationCurve.Evaluate(_blend); }
         }
 
         private void Update()

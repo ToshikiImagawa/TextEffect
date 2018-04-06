@@ -356,11 +356,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cf5350579e732c47859622d88125871, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _blend: 0.987
-  _interval: 1
+  _blend: 0
+  _interval: 5
   _fromDistance: {x: 130, y: 0}
   _toDistance: {x: -135.8, y: 0}
   _alignment: 11
+  _animationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 5.018343
+      outSlope: 5.018343
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 5.726777
+      outSlope: 5.726777
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!95 &1320113036
 Animator:
   serializedVersion: 3
